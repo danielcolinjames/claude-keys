@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Lora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Anthropic/Claude Design Tokens */
+  --bg-page: #2b2a27;
+  --bg-surface: #1f1e1b;
+  --bg-elevated: #393937;
+  --bg-hover: #444440;
+  --bg-input: #353532;
+
+  --text-primary: #eeeeee;
+  --text-secondary: #b0aea5;
+  --text-muted: #9a9893;
+  --text-subtle: #6b6a68;
+
+  --accent-primary: #d97757;
+  --accent-deep: #ae5630;
+  --accent-hover: #c4684a;
+  --accent-blue: #6a9bcc;
+  --accent-green: #788c5d;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.12);
+
+  --font-heading: 'Newsreader', ui-serif, Georgia, serif;
+  --font-body: 'Lora', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@theme inline {
+  --color-background: var(--bg-page);
+  --color-foreground: var(--text-primary);
+  --color-surface: var(--bg-surface);
+  --color-elevated: var(--bg-elevated);
+  --color-hover: var(--bg-hover);
+  --color-accent: var(--accent-primary);
+  --color-accent-deep: var(--accent-deep);
+  --color-muted: var(--text-muted);
+  --color-subtle: var(--text-subtle);
+  --color-border: var(--border-subtle);
+  --color-border-medium: var(--border-medium);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(250, 249, 240, 0.2) transparent;
+}
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(217, 119, 87, 0.3);
+}
