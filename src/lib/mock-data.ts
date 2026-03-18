@@ -29,6 +29,31 @@ export const environments: Environment[] = [
   { id: "env_dev", name: "development", label: "Development", approvalLevel: "none", approvalName: "Auto-approved", color: "hsl(210,66%,67%)" },
 ];
 
+export type KeySource = {
+  type: "created-by-claude" | "imported" | "manual";
+  provider?: string; // e.g. "Stripe API", "OpenAI", "1Password"
+  providerIcon?: string; // emoji or icon identifier
+  claimedBy?: string; // email of human who claimed it
+  claimedAt?: string;
+  createdByAgent?: string; // agent name if created by Claude
+};
+
+export type ConnectedService = {
+  name: string;
+  icon: string;
+  status: "enabled" | "pending" | "disabled";
+  keysProvisioned: number;
+  lastProvisioned: string | null;
+};
+
+export type AgentActivityEntry = {
+  timestamp: string;
+  action: string;
+  agent: string;
+  service?: string;
+  detail: string;
+};
+
 export type ApiKey = {
   id: string;
   name: string;
@@ -50,6 +75,7 @@ export type ApiKey = {
   ipAllowlist: string[];
   secretsSync: { provider: string; status: "synced" | "pending" | "error" }[];
   recentUsers: string[];
+  source: KeySource;
 };
 
 export const keys: ApiKey[] = [
@@ -77,6 +103,7 @@ export const keys: ApiKey[] = [
       { provider: "AWS Secrets Manager", status: "synced" },
     ],
     recentUsers: ["Daniel James", "Marina Chen", "Ayo Ogundimu"],
+    source: { type: "manual" },
   },
   {
     id: "key_2",
@@ -99,6 +126,7 @@ export const keys: ApiKey[] = [
     ipAllowlist: [],
     secretsSync: [{ provider: "1Password", status: "synced" }],
     recentUsers: ["Priya Sharma", "Daniel James"],
+    source: { type: "imported", provider: "1Password", providerIcon: "🔐" },
   },
   {
     id: "key_3",
@@ -123,6 +151,7 @@ export const keys: ApiKey[] = [
       { provider: "1Password", status: "synced" },
     ],
     recentUsers: ["Marina Chen", "Ayo Ogundimu"],
+    source: { type: "created-by-claude", provider: "Vercel", createdByAgent: "claude-code-dev", claimedBy: "danielcolinjames@gmail.com", claimedAt: "2026-03-01 09:15:00" },
   },
   {
     id: "key_4",
@@ -145,6 +174,7 @@ export const keys: ApiKey[] = [
     ipAllowlist: [],
     secretsSync: [],
     recentUsers: ["Caleb Morin"],
+    source: { type: "manual" },
   },
   {
     id: "key_5",
@@ -167,6 +197,7 @@ export const keys: ApiKey[] = [
     ipAllowlist: ["95.216.0.0/16"],
     secretsSync: [{ provider: "1Password", status: "synced" }],
     recentUsers: ["Daniel James"],
+    source: { type: "created-by-claude", provider: "Stripe API", createdByAgent: "being-agent", claimedBy: "danielcolinjames@gmail.com", claimedAt: "2026-03-08 14:22:00" },
   },
   {
     id: "key_6",
@@ -189,7 +220,27 @@ export const keys: ApiKey[] = [
     ipAllowlist: [],
     secretsSync: [],
     recentUsers: [],
+    source: { type: "imported", provider: "AWS Secrets Manager", providerIcon: "☁️" },
   },
+];
+
+export const connectedServices: ConnectedService[] = [
+  { name: "Stripe", icon: "💳", status: "enabled", keysProvisioned: 2, lastProvisioned: "Mar 8, 2026" },
+  { name: "Vercel", icon: "▲", status: "enabled", keysProvisioned: 1, lastProvisioned: "Mar 1, 2026" },
+  { name: "OpenAI", icon: "🤖", status: "enabled", keysProvisioned: 0, lastProvisioned: null },
+  { name: "Supabase", icon: "⚡", status: "pending", keysProvisioned: 0, lastProvisioned: null },
+  { name: "Resend", icon: "📧", status: "disabled", keysProvisioned: 0, lastProvisioned: null },
+];
+
+export const agentActivity: AgentActivityEntry[] = [
+  { timestamp: "2026-03-18 02:14:33", action: "Key provisioned", agent: "being-agent", service: "Stripe API", detail: "Created sk-stripe-****...hR9m for being.limited" },
+  { timestamp: "2026-03-18 02:14:34", action: "First API call", agent: "being-agent", service: "Stripe API", detail: "GET /v1/customers — 200 OK" },
+  { timestamp: "2026-03-18 02:15:01", action: "Webhook configured", agent: "being-agent", service: "Stripe API", detail: "payment_intent.succeeded → being.limited/webhooks" },
+  { timestamp: "2026-03-18 09:30:00", action: "Claimed by human", agent: "being-agent", detail: "danielcolinjames@gmail.com claimed key ownership" },
+  { timestamp: "2026-03-18 09:30:15", action: "Policy applied", agent: "being-agent", detail: "Production Safety policy auto-applied" },
+  { timestamp: "2026-03-17 19:42:11", action: "Key provisioned", agent: "claude-code-dev", service: "Vercel", detail: "Created vercel-****...xK8j for dillydally.today" },
+  { timestamp: "2026-03-17 19:42:12", action: "First deployment", agent: "claude-code-dev", service: "Vercel", detail: "Deployed dillydally.today to production" },
+  { timestamp: "2026-03-18 08:15:00", action: "Claimed by human", agent: "claude-code-dev", detail: "danielcolinjames@gmail.com claimed key ownership" },
 ];
 
 export type UsageDataPoint = {

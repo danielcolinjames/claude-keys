@@ -3,7 +3,7 @@
 import { Shell } from "@/components/shell";
 import { Sparkline } from "@/components/sparkline";
 import { FeaturePromo } from "@/components/feature-promo";
-import { keys, environments, team } from "@/lib/mock-data";
+import { keys, environments, team, connectedServices, agentActivity } from "@/lib/mock-data";
 
 const statusColors: Record<string, { bg: string; text: string; dot: string; label: string }> = {
   active: { bg: "bg-[hsl(97,59%,46%)]/10", text: "text-[hsl(97,59%,46%)]", dot: "bg-[hsl(97,59%,46%)]", label: "Active" },
@@ -106,16 +106,37 @@ export default function DashboardPage() {
                 className="grid grid-cols-[1.8fr_1fr_1fr_1fr_100px_80px_60px] items-center gap-4 border-b-0.5 px-5 py-3.5 transition-colors last:border-b-0 hover:bg-[var(--bg-200)]"
                 style={{ borderColor: "var(--border-300)" }}
               >
-                {/* Name + env badge */}
+                {/* Name + env badge + source */}
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--bg-300)]">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--text-400)" strokeWidth="1.5">
-                      <path d="M10.5 1.5a3 3 0 0 1 0 6 3 3 0 0 1-3-3 3 3 0 0 1 3-3z" />
-                      <path d="M8.12 6.38 1.5 13v1.5H4l.75-.75v-1.5h1.5l.75-.75v-1.5h1.5l1.62-1.62" />
-                    </svg>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                    key.source.type === "created-by-claude" ? "bg-[var(--accent-brand)]/15" : "bg-[var(--bg-300)]"
+                  }`}>
+                    {key.source.type === "created-by-claude" ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-brand)">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                      </svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--text-400)" strokeWidth="1.5">
+                        <path d="M10.5 1.5a3 3 0 0 1 0 6 3 3 0 0 1-3-3 3 3 0 0 1 3-3z" />
+                        <path d="M8.12 6.38 1.5 13v1.5H4l.75-.75v-1.5h1.5l.75-.75v-1.5h1.5l1.62-1.62" />
+                      </svg>
+                    )}
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-[var(--text-000)]">{key.name}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-[var(--text-000)]">{key.name}</span>
+                      {key.source.type === "created-by-claude" && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-brand)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-brand)]">
+                          <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
+                          Created by Claude{key.source.provider ? ` via ${key.source.provider}` : ""}
+                        </span>
+                      )}
+                      {key.source.type === "imported" && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-[hsl(210,66%,67%)]/10 px-2 py-0.5 text-[10px] font-medium text-[hsl(210,66%,67%)]">
+                          {key.source.providerIcon} Imported from {key.source.provider}
+                        </span>
+                      )}
+                    </div>
                     <span className={`inline-block mt-0.5 rounded border-0.5 px-1.5 py-0 text-[10px] ${env}`}>
                       {key.environment}
                     </span>
@@ -246,6 +267,83 @@ export default function DashboardPage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+        {/* Connected Services + Agent Activity */}
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {/* Connected Services */}
+          <div className="rounded-xl border-0.5 bg-[var(--bg-100)]" style={{ borderColor: "var(--border-300)" }}>
+            <div className="border-b-0.5 px-5 py-3.5 flex items-center justify-between" style={{ borderColor: "var(--border-300)" }}>
+              <h2 className="text-sm font-semibold text-[var(--text-000)]">Connected Services</h2>
+              <span className="text-[10px] text-[var(--text-500)]">Claude Keys Protocol</span>
+            </div>
+            {connectedServices.map((service, i) => (
+              <div
+                key={service.name}
+                className="flex items-center justify-between px-5 py-2.5"
+                style={{ borderBottom: i < connectedServices.length - 1 ? "0.5px solid var(--border-300)" : "none" }}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-base">{service.icon}</span>
+                  <div>
+                    <div className="text-sm text-[var(--text-000)]">{service.name}</div>
+                    {service.keysProvisioned > 0 && (
+                      <div className="text-[10px] text-[var(--text-500)]">
+                        {service.keysProvisioned} key{service.keysProvisioned !== 1 ? "s" : ""} provisioned · last {service.lastProvisioned}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                  service.status === "enabled" ? "bg-[hsl(97,59%,46%)]/10 text-[hsl(97,59%,46%)]" :
+                  service.status === "pending" ? "bg-[hsl(40,71%,50%)]/10 text-[hsl(40,71%,50%)]" :
+                  "bg-[var(--bg-300)] text-[var(--text-500)]"
+                }`}>
+                  {service.status === "enabled" ? "Claude Keys enabled" : service.status === "pending" ? "Pending enrollment" : "Not connected"}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Agent Activity Timeline */}
+          <div className="rounded-xl border-0.5 bg-[var(--bg-100)]" style={{ borderColor: "var(--border-300)" }}>
+            <div className="border-b-0.5 px-5 py-3.5 flex items-center justify-between" style={{ borderColor: "var(--border-300)" }}>
+              <h2 className="text-sm font-semibold text-[var(--text-000)]">Agent Activity</h2>
+              <span className="text-[10px] text-[var(--text-500)]">Autonomous key provisioning</span>
+            </div>
+            <div className="max-h-[280px] overflow-y-auto">
+              {agentActivity.map((entry, i) => (
+                <div
+                  key={i}
+                  className="flex gap-3 px-5 py-2"
+                  style={{ borderBottom: i < agentActivity.length - 1 ? "0.5px solid var(--border-300)" : "none" }}
+                >
+                  {/* Timeline dot */}
+                  <div className="flex flex-col items-center pt-1">
+                    <div className={`h-2 w-2 rounded-full ${
+                      entry.action === "Claimed by human" ? "bg-[hsl(97,59%,46%)]" :
+                      entry.action === "Key provisioned" ? "bg-[var(--accent-brand)]" :
+                      "bg-[var(--text-500)]"
+                    }`} />
+                    {i < agentActivity.length - 1 && <div className="mt-1 w-px flex-1 bg-[var(--border-300)]" />}
+                  </div>
+                  <div className="flex-1 pb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-[var(--text-000)]">{entry.action}</span>
+                      {entry.service && (
+                        <span className="rounded bg-[var(--bg-300)] px-1.5 py-0 text-[10px] text-[var(--text-400)]">
+                          {entry.service}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[10px] text-[var(--text-400)]">{entry.detail}</div>
+                    <div className="mt-0.5 text-[10px] text-[var(--text-500)]">
+                      {entry.timestamp} · {entry.agent}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
