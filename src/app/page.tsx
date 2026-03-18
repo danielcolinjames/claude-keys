@@ -2,6 +2,7 @@
 
 import { Shell } from "@/components/shell";
 import { Sparkline } from "@/components/sparkline";
+import { FeaturePromo } from "@/components/feature-promo";
 import { keys, environments, team } from "@/lib/mock-data";
 
 const statusColors: Record<string, { bg: string; text: string; dot: string; label: string }> = {
@@ -25,6 +26,7 @@ export default function DashboardPage() {
 
   return (
     <Shell>
+      <FeaturePromo />
       <div className="px-8 py-6 max-w-[1200px]">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">

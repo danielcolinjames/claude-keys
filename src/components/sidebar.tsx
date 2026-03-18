@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 
-/* ── Claude sparkle logo at different sizes (the *** motif) ── */
+/* ── Three Claude sparkle logos (*** motif) — all same size ── */
 function ClaudeSparkles() {
   return (
-    <span className="ml-auto flex items-center gap-[3px]">
-      <Image src="/claude-sparkle.png" alt="" width={10} height={10} className="opacity-70" />
-      <Image src="/claude-sparkle.png" alt="" width={14} height={14} className="opacity-90" />
-      <Image src="/claude-sparkle.png" alt="" width={10} height={10} className="opacity-70" />
+    <span className="ml-auto flex items-center gap-[2px]">
+      <Image src="/claude-sparkle.png" alt="" width={12} height={12} className="opacity-80" />
+      <Image src="/claude-sparkle.png" alt="" width={12} height={12} className="opacity-80" />
+      <Image src="/claude-sparkle.png" alt="" width={12} height={12} className="opacity-80" />
     </span>
   );
 }
