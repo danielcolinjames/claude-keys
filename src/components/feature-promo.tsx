@@ -45,11 +45,25 @@ export function FeaturePromo() {
             Introducing Claude Keys
           </h2>
           <p className="text-sm text-[var(--text-300)] leading-relaxed mb-4">
-            Manage your team&apos;s API keys with environment-based approval workflows,
-            autonomous agent provisioning, and secrets sync — all built into Claude.
+            Give Claude safe access to your team&apos;s API keys. Every time Claude needs a key,
+            it requests permission from the right person based on the environment.
           </p>
 
-          {/* Escalation path mini-diagram */}
+          {/* Access request mini-illustration */}
+          <div className="mb-4 rounded-lg bg-[var(--bg-200)] p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--accent-brand)"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
+              <span className="text-xs font-medium text-[var(--text-000)]">Claude wants to use</span>
+              <code className="text-xs font-medium text-[var(--accent-brand)] bg-[var(--accent-brand)]/10 px-1.5 py-0.5 rounded" style={{ fontFamily: "var(--font-mono)" }}>Datadog Staging</code>
+            </div>
+            <div className="flex items-center gap-2 ml-5">
+              <button className="rounded-md bg-[var(--accent-brand)] px-3 py-1.5 text-[11px] font-medium text-white">Approve</button>
+              <button className="rounded-md border-0.5 px-3 py-1.5 text-[11px] font-medium text-[var(--text-400)]" style={{ borderColor: "var(--border-300)" }}>Escalate</button>
+              <button className="rounded-md px-3 py-1.5 text-[11px] text-[var(--text-500)]">Deny</button>
+            </div>
+          </div>
+
+          {/* Escalation path */}
           <div className="mb-4 rounded-lg bg-[var(--bg-200)] p-3">
             <div className="flex items-center gap-2">
               <EscalationStep color="hsl(210,66%,67%)" label="Development" approval="Auto-approved" />
@@ -61,10 +75,10 @@ export function FeaturePromo() {
           </div>
 
           <ul className="space-y-2 mb-6">
-            <PromoItem>Keys grouped by project and environment with escalating approvals</PromoItem>
-            <PromoItem>Claude agents provision keys autonomously — humans claim later</PromoItem>
+            <PromoItem>Claude requests access — the right person approves every time</PromoItem>
+            <PromoItem>Environment-based escalation: dev auto-approves, prod requires CTO</PromoItem>
             <PromoItem>Zero-downtime rotation synced to 1Password, AWS, Vault</PromoItem>
-            <PromoItem>Full audit trail across team members and autonomous agents</PromoItem>
+            <PromoItem>Full audit trail of every access request, approval, and denial</PromoItem>
           </ul>
           <div className="flex items-center gap-3">
             <button

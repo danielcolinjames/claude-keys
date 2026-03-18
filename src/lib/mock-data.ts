@@ -30,20 +30,31 @@ export const environments: Environment[] = [
 ];
 
 export type KeySource = {
-  type: "created-by-claude" | "imported" | "manual";
+  type: "imported" | "manual";
   provider?: string; // e.g. "Stripe API", "OpenAI", "1Password"
   providerIcon?: string; // emoji or icon identifier
-  claimedBy?: string; // email of human who claimed it
-  claimedAt?: string;
-  createdByAgent?: string; // agent name if created by Claude
+};
+
+export type AccessRequest = {
+  id: string;
+  keyName: string;
+  keyDescription: string;
+  project: string;
+  environment: "production" | "staging" | "development";
+  requestedBy: string; // agent or context name
+  reason: string;
+  timestamp: string;
+  suggestedProject: string;
+  suggestedEnvironment: string;
+  status: "pending" | "approved" | "denied";
 };
 
 export type ConnectedService = {
   name: string;
   icon: string;
   status: "enabled" | "pending" | "disabled";
-  keysProvisioned: number;
-  lastProvisioned: string | null;
+  keysManaged: number;
+  lastAccessed: string | null;
 };
 
 export type AgentActivityEntry = {
@@ -134,7 +145,7 @@ export const keys: ApiKey[] = [
   {
     id: "key_3",
     name: "staging-api",
-    description: "Staging environment — provisioned by Claude via Vercel",
+    description: "Staging environment for pre-release testing",
     project: "dillydally.today",
     prefix: "sk-ant-api03-mN2v...xK8j",
     created: "2026-03-01",
@@ -155,7 +166,7 @@ export const keys: ApiKey[] = [
       { provider: "1Password", status: "synced" },
     ],
     recentUsers: ["Marina Chen", "Ayo Ogundimu"],
-    source: { type: "created-by-claude", provider: "Vercel", createdByAgent: "claude-code-dev", claimedBy: "danielcolinjames@gmail.com", claimedAt: "2026-03-01 09:15:00" },
+    source: { type: "imported", provider: "Vercel" },
   },
   {
     id: "key_4",
@@ -184,7 +195,7 @@ export const keys: ApiKey[] = [
   {
     id: "key_5",
     name: "agent-prod",
-    description: "Autonomous agent key — provisioned by Claude via Stripe",
+    description: "Production key for Being autonomous agent",
     project: "being.limited",
     prefix: "sk-ant-api03-Lp4Q...hR9m",
     created: "2026-03-08",
@@ -203,7 +214,7 @@ export const keys: ApiKey[] = [
     ipAllowlist: ["95.216.0.0/16"],
     secretsSync: [{ provider: "1Password", status: "synced" }],
     recentUsers: ["Daniel James"],
-    source: { type: "created-by-claude", provider: "Stripe API", createdByAgent: "being-agent", claimedBy: "danielcolinjames@gmail.com", claimedAt: "2026-03-08 14:22:00" },
+    source: { type: "imported", provider: "Stripe" },
   },
   {
     id: "key_6",
@@ -231,23 +242,53 @@ export const keys: ApiKey[] = [
   },
 ];
 
+export const pendingRequests: AccessRequest[] = [
+  {
+    id: "req_1",
+    keyName: "Datadog API Key",
+    keyDescription: "Claude needs read access to query monitoring dashboards and pull error logs for debugging the being.limited production outage.",
+    project: "being.limited",
+    environment: "staging",
+    requestedBy: "Claude Code",
+    reason: "Debugging production error spike — need to check Datadog error logs",
+    timestamp: "2 min ago",
+    suggestedProject: "being.limited",
+    suggestedEnvironment: "staging",
+    status: "pending",
+  },
+  {
+    id: "req_2",
+    keyName: "Resend API Key",
+    keyDescription: "Claude needs send access to set up transactional email for the Unsaid onboarding flow.",
+    project: "unsaid.to",
+    environment: "development",
+    requestedBy: "Claude Code",
+    reason: "Setting up email verification flow for new user signup",
+    timestamp: "18 min ago",
+    suggestedProject: "unsaid.to",
+    suggestedEnvironment: "development",
+    status: "pending",
+  },
+];
+
 export const connectedServices: ConnectedService[] = [
-  { name: "Stripe", icon: "💳", status: "enabled", keysProvisioned: 2, lastProvisioned: "Mar 8, 2026" },
-  { name: "Vercel", icon: "▲", status: "enabled", keysProvisioned: 1, lastProvisioned: "Mar 1, 2026" },
-  { name: "OpenAI", icon: "🤖", status: "enabled", keysProvisioned: 0, lastProvisioned: null },
-  { name: "Supabase", icon: "⚡", status: "pending", keysProvisioned: 0, lastProvisioned: null },
-  { name: "Resend", icon: "📧", status: "disabled", keysProvisioned: 0, lastProvisioned: null },
+  { name: "Stripe", icon: "💳", status: "enabled", keysManaged: 2, lastAccessed: "8 min ago" },
+  { name: "Vercel", icon: "▲", status: "enabled", keysManaged: 1, lastAccessed: "1 hr ago" },
+  { name: "OpenAI", icon: "🤖", status: "enabled", keysManaged: 0, lastAccessed: null },
+  { name: "Datadog", icon: "📊", status: "enabled", keysManaged: 0, lastAccessed: null },
+  { name: "Supabase", icon: "⚡", status: "pending", keysManaged: 0, lastAccessed: null },
+  { name: "Resend", icon: "📧", status: "pending", keysManaged: 0, lastAccessed: null },
 ];
 
 export const agentActivity: AgentActivityEntry[] = [
-  { timestamp: "2026-03-18 02:14:33", action: "Key provisioned", agent: "being-agent", service: "Stripe API", detail: "Created sk-stripe-****...hR9m for being.limited" },
-  { timestamp: "2026-03-18 02:14:34", action: "First API call", agent: "being-agent", service: "Stripe API", detail: "GET /v1/customers — 200 OK" },
-  { timestamp: "2026-03-18 02:15:01", action: "Webhook configured", agent: "being-agent", service: "Stripe API", detail: "payment_intent.succeeded → being.limited/webhooks" },
-  { timestamp: "2026-03-18 09:30:00", action: "Claimed by human", agent: "being-agent", detail: "danielcolinjames@gmail.com claimed key ownership" },
-  { timestamp: "2026-03-18 09:30:15", action: "Policy applied", agent: "being-agent", detail: "Production Safety policy auto-applied" },
-  { timestamp: "2026-03-17 19:42:11", action: "Key provisioned", agent: "claude-code-dev", service: "Vercel", detail: "Created vercel-****...xK8j for dillydally.today" },
-  { timestamp: "2026-03-17 19:42:12", action: "First deployment", agent: "claude-code-dev", service: "Vercel", detail: "Deployed dillydally.today to production" },
-  { timestamp: "2026-03-18 08:15:00", action: "Claimed by human", agent: "claude-code-dev", detail: "danielcolinjames@gmail.com claimed key ownership" },
+  { timestamp: "2026-03-18 14:32:05", action: "Access requested", agent: "Claude Code", service: "Datadog", detail: "Requested read access to Datadog staging key for being.limited" },
+  { timestamp: "2026-03-18 14:14:22", action: "Access requested", agent: "Claude Code", service: "Resend", detail: "Requested send access to Resend dev key for unsaid.to" },
+  { timestamp: "2026-03-18 14:02:11", action: "Access approved", agent: "Claude Code", service: "Stripe", detail: "Daniel James approved access to Stripe production key" },
+  { timestamp: "2026-03-18 13:58:00", action: "Access requested", agent: "Claude Code", service: "Stripe", detail: "Requested read access to Stripe production key for being.limited" },
+  { timestamp: "2026-03-18 11:30:00", action: "Access auto-approved", agent: "Claude Code", service: "Vercel", detail: "Development key auto-approved per environment policy" },
+  { timestamp: "2026-03-18 09:15:44", action: "Access escalated", agent: "Claude Code", service: "Stripe", detail: "Production access escalated to CTO (Sarah Kim)" },
+  { timestamp: "2026-03-17 19:42:11", action: "Access approved", agent: "Claude Code", service: "Vercel", detail: "Marina Chen approved staging access for dillydally.today" },
+  { timestamp: "2026-03-17 16:30:00", action: "Key imported", agent: "Daniel James", service: "1Password", detail: "Imported 2 keys from 1Password vault" },
 ];
 
 export type UsageDataPoint = {

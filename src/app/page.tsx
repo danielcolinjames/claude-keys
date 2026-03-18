@@ -10,6 +10,7 @@ import {
   connectedServices,
   agentActivity,
   auditLog,
+  pendingRequests,
   type ApiKey,
 } from "@/lib/mock-data";
 
@@ -49,7 +50,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <button className="rounded-lg bg-[var(--accent-brand)] px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90 active:scale-[0.98]">
-            + Create Key
+            + Import Key
           </button>
         </div>
 
@@ -82,10 +83,69 @@ export default function DashboardPage() {
   );
 }
 
-/* ── Tab 1: All Keys — clean project cards ── */
+/* ── Tab 1: All Keys — pending requests + project cards ── */
 function KeysTab() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      {/* Pending access requests from Claude */}
+      {pendingRequests.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-medium text-[var(--accent-brand)]">Requested by Claude</span>
+            <span className="rounded-full bg-[var(--accent-brand)]/15 px-1.5 py-0 text-[10px] font-medium text-[var(--accent-brand)]">{pendingRequests.length}</span>
+          </div>
+          {pendingRequests.map((req) => {
+            const envDef = environments.find((e) => e.name === req.suggestedEnvironment);
+            return (
+              <div
+                key={req.id}
+                className="rounded-xl border-0.5 bg-[var(--bg-100)] overflow-hidden"
+                style={{ borderColor: "var(--accent-brand)", borderWidth: "1px" }}
+              >
+                <div className="px-5 py-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-brand)"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
+                        <span className="text-sm font-medium text-[var(--text-000)]">Claude wants to use</span>
+                        <code className="text-sm font-medium text-[var(--accent-brand)] bg-[var(--accent-brand)]/10 px-1.5 py-0.5 rounded" style={{ fontFamily: "var(--font-mono)" }}>{req.keyName}</code>
+                      </div>
+                      <p className="text-xs text-[var(--text-400)] mb-3">{req.reason}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5 rounded-md bg-[var(--bg-200)] px-2.5 py-1.5">
+                          <span className="text-[10px] text-[var(--text-500)]">Project</span>
+                          <span className="text-xs font-medium text-[var(--text-000)]">{req.suggestedProject}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 rounded-md bg-[var(--bg-200)] px-2.5 py-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: envDef?.color }} />
+                          <span className="text-[10px] text-[var(--text-500)]">Environment</span>
+                          <span className="text-xs font-medium text-[var(--text-000)]">{envDef?.label}</span>
+                        </div>
+                        <span className="text-[10px] text-[var(--text-500)]">{req.timestamp}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0 pt-1">
+                      <button className="rounded-lg bg-[var(--accent-brand)] px-4 py-2 text-xs font-medium text-white transition-colors hover:opacity-90 active:scale-[0.98]">
+                        Approve
+                      </button>
+                      {envDef && envDef.approvalLevel !== "none" && (
+                        <button className="rounded-lg border-0.5 px-4 py-2 text-xs font-medium text-[var(--text-300)] transition-colors hover:bg-[var(--bg-200)] hover:text-[var(--text-000)]" style={{ borderColor: "var(--border-300)" }}>
+                          Escalate to {envDef.approvalName}
+                        </button>
+                      )}
+                      <button className="rounded-lg px-3 py-2 text-xs text-[var(--text-500)] transition-colors hover:text-[hsl(0,70%,65%)] hover:bg-[hsl(0,70%,65%)]/10">
+                        Deny
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Project cards */}
       {projects.map((project) => {
         const projectKeys = keys.filter((k) => k.project === project);
         return <ProjectCard key={project} project={project} keys={projectKeys} />;
@@ -179,11 +239,10 @@ function ProjectCard({ project, keys: projectKeys }: { project: string; keys: Ap
                 {/* Description (replaces key name in collapsed view) */}
                 <span className="text-sm text-[var(--text-200)] flex-1 min-w-0 truncate">{key.description}</span>
 
-                {/* Source badge (only for created-by-claude) */}
-                {key.source.type === "created-by-claude" && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-brand)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-brand)] flex-shrink-0">
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
-                    Created by Claude
+                {/* Source badge */}
+                {key.source.type === "imported" && key.source.provider && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--bg-300)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-400)] flex-shrink-0">
+                    from {key.source.provider}
                   </span>
                 )}
 
@@ -240,15 +299,6 @@ function ProjectCard({ project, keys: projectKeys }: { project: string; keys: Ap
                         <span className="text-xs text-[var(--text-300)]">{key.lastUsed}</span>
                         <div className="text-[10px] text-[var(--text-500)]">{key.lastUsedBy}</div>
                       </div>
-                      {key.source.type === "created-by-claude" && key.source.provider && (
-                        <div>
-                          <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Provisioned via</div>
-                          <span className="text-xs text-[var(--accent-brand)]">{key.source.provider}</span>
-                          {key.source.claimedBy && (
-                            <div className="text-[10px] text-[var(--text-500)]">Claimed by {key.source.claimedBy}</div>
-                          )}
-                        </div>
-                      )}
                       {key.source.type === "imported" && key.source.provider && (
                         <div>
                           <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Imported from</div>
@@ -327,8 +377,8 @@ function ActivityTab() {
       {/* Agent Activity Timeline */}
       <div className="rounded-xl border-0.5 bg-[var(--bg-100)]" style={{ borderColor: "var(--border-300)" }}>
         <div className="border-b-0.5 px-5 py-3.5 flex items-center justify-between" style={{ borderColor: "var(--border-300)" }}>
-          <h2 className="text-sm font-semibold text-[var(--text-000)]">Agent Activity</h2>
-          <span className="text-[10px] text-[var(--text-500)]">Autonomous key provisioning</span>
+          <h2 className="text-sm font-semibold text-[var(--text-000)]">Access Log</h2>
+          <span className="text-[10px] text-[var(--text-500)]">Key access requests and approvals</span>
         </div>
         <div>
           {agentActivity.map((entry, i) => (
@@ -339,8 +389,9 @@ function ActivityTab() {
             >
               <div className="flex flex-col items-center pt-1">
                 <div className={`h-2 w-2 rounded-full ${
-                  entry.action === "Claimed by human" ? "bg-[hsl(97,59%,46%)]" :
-                  entry.action === "Key provisioned" ? "bg-[var(--accent-brand)]" :
+                  entry.action === "Access approved" || entry.action === "Access auto-approved" ? "bg-[hsl(97,59%,46%)]" :
+                  entry.action === "Access requested" ? "bg-[var(--accent-brand)]" :
+                  entry.action === "Access escalated" ? "bg-[hsl(40,71%,50%)]" :
                   "bg-[var(--text-500)]"
                 }`} />
                 {i < agentActivity.length - 1 && <div className="mt-1 w-px flex-1 bg-[var(--border-300)]" />}
@@ -403,9 +454,9 @@ function ServicesTab() {
             </svg>
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-[var(--text-000)]">Claude Keys Protocol</h2>
+            <h2 className="text-sm font-semibold text-[var(--text-000)]">Connected Services</h2>
             <p className="text-xs text-[var(--text-400)]">
-              Services that enroll in the Claude Keys Protocol allow Claude to autonomously provision and manage API keys on your behalf. A human can claim ownership at any time.
+              Services connected to Claude Keys. When Claude needs access to a key, it requests permission from the right person based on the environment&apos;s approval policy.
             </p>
           </div>
         </div>
@@ -428,13 +479,13 @@ function ServicesTab() {
             <div className="flex items-center gap-3">
               <div>
                 <div className="text-sm font-medium text-[var(--text-000)]">{service.name}</div>
-                {service.keysProvisioned > 0 ? (
+                {service.keysManaged > 0 ? (
                   <div className="text-[11px] text-[var(--text-400)]">
-                    {service.keysProvisioned} key{service.keysProvisioned !== 1 ? "s" : ""} provisioned · last {service.lastProvisioned}
+                    {service.keysManaged} key{service.keysManaged !== 1 ? "s" : ""} managed · last accessed {service.lastAccessed}
                   </div>
                 ) : (
                   <div className="text-[11px] text-[var(--text-500)]">
-                    No keys provisioned yet
+                    No keys added yet
                   </div>
                 )}
               </div>
