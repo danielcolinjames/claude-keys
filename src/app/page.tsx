@@ -96,47 +96,60 @@ function KeysTab() {
           </div>
           {pendingRequests.map((req) => {
             const envDef = environments.find((e) => e.name === req.suggestedEnvironment);
+            const needsEscalation = envDef && envDef.approvalLevel !== "none";
+
             return (
               <div
                 key={req.id}
-                className="rounded-xl border-0.5 bg-[var(--bg-100)] overflow-hidden"
-                style={{ borderColor: "var(--accent-brand)", borderWidth: "1px" }}
+                className="rounded-xl bg-[var(--bg-100)] overflow-hidden"
+                style={{ border: "1px solid var(--accent-brand)" }}
               >
-                <div className="px-5 py-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-brand)"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
-                        <span className="text-sm font-medium text-[var(--text-000)]">Claude wants to use</span>
-                        <code className="text-sm font-medium text-[var(--accent-brand)] bg-[var(--accent-brand)]/10 px-1.5 py-0.5 rounded" style={{ fontFamily: "var(--font-mono)" }}>{req.keyName}</code>
-                      </div>
-                      <p className="text-xs text-[var(--text-400)] mb-3">{req.reason}</p>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1.5 rounded-md bg-[var(--bg-200)] px-2.5 py-1.5">
-                          <span className="text-[10px] text-[var(--text-500)]">Project</span>
-                          <span className="text-xs font-medium text-[var(--text-000)]">{req.suggestedProject}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 rounded-md bg-[var(--bg-200)] px-2.5 py-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: envDef?.color }} />
-                          <span className="text-[10px] text-[var(--text-500)]">Environment</span>
-                          <span className="text-xs font-medium text-[var(--text-000)]">{envDef?.label}</span>
-                        </div>
-                        <span className="text-[10px] text-[var(--text-500)]">{req.timestamp}</span>
-                      </div>
+                <div className="p-5">
+                  {/* Request header */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-brand)"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
+                    <span className="text-sm text-[var(--text-200)]">Claude wants to use</span>
+                    <span className="text-sm font-medium text-[var(--text-000)]">{req.keyName}</span>
+                  </div>
+
+                  {/* Reason */}
+                  <p className="text-xs text-[var(--text-400)] mb-4 ml-[22px]">{req.reason}</p>
+
+                  {/* Metadata pills */}
+                  <div className="flex items-center gap-3 mb-4 ml-[22px]">
+                    <div className="flex items-center gap-1.5 rounded-md bg-[var(--bg-200)] px-2.5 py-1.5">
+                      <span className="text-[10px] text-[var(--text-500)]">Project</span>
+                      <span className="text-xs font-medium text-[var(--text-000)]">{req.suggestedProject}</span>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0 pt-1">
-                      <button className="rounded-lg bg-[var(--accent-brand)] px-4 py-2 text-xs font-medium text-white transition-colors hover:opacity-90 active:scale-[0.98]">
-                        Approve
-                      </button>
-                      {envDef && envDef.approvalLevel !== "none" && (
-                        <button className="rounded-lg border-0.5 px-4 py-2 text-xs font-medium text-[var(--text-300)] transition-colors hover:bg-[var(--bg-200)] hover:text-[var(--text-000)]" style={{ borderColor: "var(--border-300)" }}>
+                    <div className="flex items-center gap-1.5 rounded-md bg-[var(--bg-200)] px-2.5 py-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: envDef?.color }} />
+                      <span className="text-[10px] text-[var(--text-500)]">Env</span>
+                      <span className="text-xs font-medium text-[var(--text-000)]">{envDef?.label}</span>
+                    </div>
+                    <span className="text-[10px] text-[var(--text-500)]">{req.timestamp}</span>
+                  </div>
+
+                  {/* Action buttons — clean 50/50 split */}
+                  <div className="flex gap-2 ml-[22px]">
+                    {needsEscalation ? (
+                      <>
+                        <button className="flex-1 rounded-lg bg-[var(--accent-brand)] py-2.5 text-xs font-medium text-white transition-colors hover:opacity-90 active:scale-[0.98]">
                           Escalate to {envDef.approvalName}
                         </button>
-                      )}
-                      <button className="rounded-lg px-3 py-2 text-xs text-[var(--text-500)] transition-colors hover:text-[hsl(0,70%,65%)] hover:bg-[hsl(0,70%,65%)]/10">
-                        Deny
-                      </button>
-                    </div>
+                        <button className="flex-1 rounded-lg border-0.5 py-2.5 text-xs font-medium text-[var(--text-400)] transition-colors hover:bg-[var(--bg-200)] hover:text-[var(--text-000)]" style={{ borderColor: "var(--border-300)" }}>
+                          Deny
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button className="flex-1 rounded-lg bg-[var(--accent-brand)] py-2.5 text-xs font-medium text-white transition-colors hover:opacity-90 active:scale-[0.98]">
+                          Approve
+                        </button>
+                        <button className="flex-1 rounded-lg border-0.5 py-2.5 text-xs font-medium text-[var(--text-400)] transition-colors hover:bg-[var(--bg-200)] hover:text-[var(--text-000)]" style={{ borderColor: "var(--border-300)" }}>
+                          Deny
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
