@@ -10,13 +10,14 @@ import {
   connectedServices,
   agentActivity,
   auditLog,
+  type ApiKey,
 } from "@/lib/mock-data";
 
-const statusColors: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-  active: { bg: "bg-[hsl(97,59%,46%)]/10", text: "text-[hsl(97,59%,46%)]", dot: "bg-[hsl(97,59%,46%)]", label: "Active" },
-  expiring: { bg: "bg-[hsl(40,71%,50%)]/10", text: "text-[hsl(40,71%,50%)]", dot: "bg-[hsl(40,71%,50%)]", label: "Expiring" },
-  revoked: { bg: "bg-[hsl(0,98%,75%)]/10", text: "text-[hsl(0,98%,75%)]", dot: "bg-[hsl(0,98%,75%)]", label: "Revoked" },
-  "rate-limited": { bg: "bg-[hsl(15,63%,60%)]/10", text: "text-[hsl(15,63%,60%)]", dot: "bg-[hsl(15,63%,60%)]", label: "Rate Limited" },
+const statusColors: Record<string, { dot: string; label: string; text: string }> = {
+  active: { dot: "bg-[hsl(97,59%,46%)]", label: "Active", text: "text-[hsl(97,59%,46%)]" },
+  expiring: { dot: "bg-[hsl(40,71%,50%)]", label: "Expiring", text: "text-[hsl(40,71%,50%)]" },
+  revoked: { dot: "bg-[hsl(0,98%,75%)]", label: "Revoked", text: "text-[hsl(0,98%,75%)]" },
+  "rate-limited": { dot: "bg-[hsl(15,63%,60%)]", label: "Rate Limited", text: "text-[hsl(15,63%,60%)]" },
 };
 
 type Tab = "keys" | "activity" | "services";
@@ -36,15 +37,15 @@ export default function DashboardPage() {
   return (
     <Shell>
       <FeaturePromo />
-      <div className="px-8 py-6 max-w-[1200px]">
+      <div className="px-8 py-6 max-w-[960px]">
         {/* Header */}
         <div className="mb-5 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-[var(--text-000)]" style={{ fontFamily: "var(--font-serif)" }}>
-              API Keys
+              Keys
             </h1>
             <p className="mt-1 text-sm text-[var(--text-400)]">
-              Manage, monitor, and secure your team&apos;s Claude API keys
+              Designed for Claude to safely access API keys and request the relevant permissions each time
             </p>
           </div>
           <button className="rounded-lg bg-[var(--accent-brand)] px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90 active:scale-[0.98]">
@@ -81,252 +82,206 @@ export default function DashboardPage() {
   );
 }
 
-/* ── Tab 1: All Keys — grouped by project, then environment ── */
+/* ── Tab 1: All Keys — clean project cards ── */
 function KeysTab() {
-  const [projectFilter, setProjectFilter] = useState<string | null>(null);
-  const [envFilter, setEnvFilter] = useState<string | null>(null);
-
-  const filteredKeys = keys.filter((k) => {
-    if (projectFilter && k.project !== projectFilter) return false;
-    if (envFilter && k.environment !== envFilter) return false;
-    return true;
-  });
-
-  // Group filtered keys by project
-  const projectGroups = projects
-    .filter((p) => !projectFilter || p === projectFilter)
-    .map((project) => ({
-      project,
-      keys: filteredKeys.filter((k) => k.project === project),
-    }))
-    .filter((g) => g.keys.length > 0);
-
   return (
-    <div className="space-y-4">
-      {/* Filter pills */}
-      <div className="flex items-center gap-2">
-        {/* Project filter */}
-        <div className="relative">
-          <select
-            value={projectFilter || ""}
-            onChange={(e) => setProjectFilter(e.target.value || null)}
-            className="appearance-none rounded-lg border-0.5 bg-[var(--bg-100)] pl-3 pr-7 py-1.5 text-xs font-medium text-[var(--text-200)] outline-none transition-colors hover:bg-[var(--bg-200)] cursor-pointer"
-            style={{ borderColor: "var(--border-300)" }}
-          >
-            <option value="">All projects</option>
-            {projects.map((p) => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
-          <svg className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-400)]" width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M4 6l4 4 4-4" />
-          </svg>
-        </div>
-
-        {/* Environment filter */}
-        <div className="relative">
-          <select
-            value={envFilter || ""}
-            onChange={(e) => setEnvFilter(e.target.value || null)}
-            className="appearance-none rounded-lg border-0.5 bg-[var(--bg-100)] pl-3 pr-7 py-1.5 text-xs font-medium text-[var(--text-200)] outline-none transition-colors hover:bg-[var(--bg-200)] cursor-pointer"
-            style={{ borderColor: "var(--border-300)" }}
-          >
-            <option value="">All environments</option>
-            {environments.map((e) => (
-              <option key={e.name} value={e.name}>{e.label}</option>
-            ))}
-          </select>
-          <svg className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-400)]" width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M4 6l4 4 4-4" />
-          </svg>
-        </div>
-
-        {(projectFilter || envFilter) && (
-          <button
-            onClick={() => { setProjectFilter(null); setEnvFilter(null); }}
-            className="rounded-md px-2 py-1 text-[10px] text-[var(--text-400)] hover:text-[var(--text-200)] transition-colors"
-          >
-            Clear filters
-          </button>
-        )}
-
-        <span className="ml-auto text-[11px] text-[var(--text-500)]">
-          {filteredKeys.length} key{filteredKeys.length !== 1 ? "s" : ""} across {projectGroups.length} project{projectGroups.length !== 1 ? "s" : ""}
-        </span>
-      </div>
-
-      {/* Project groups */}
-      {projectGroups.map(({ project, keys: projectKeys }) => (
-        <ProjectGroup key={project} project={project} keys={projectKeys} envFilter={envFilter} />
-      ))}
+    <div className="space-y-3">
+      {projects.map((project) => {
+        const projectKeys = keys.filter((k) => k.project === project);
+        return <ProjectCard key={project} project={project} keys={projectKeys} />;
+      })}
     </div>
   );
 }
 
-function ProjectGroup({ project, keys: projectKeys, envFilter }: { project: string; keys: typeof keys; envFilter: string | null }) {
+function ProjectCard({ project, keys: projectKeys }: { project: string; keys: ApiKey[] }) {
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+
+  const activeCount = projectKeys.filter((k) => k.status === "active").length;
+  const totalAccesses = projectKeys.reduce((s, k) => s + k.accessesToday, 0);
+
   // Group keys by environment
   const envOrder = ["production", "staging", "development"] as const;
   const envGroups = envOrder
-    .filter((env) => !envFilter || env === envFilter)
-    .map((envName) => {
-      const envDef = environments.find((e) => e.name === envName)!;
-      const envKeys = projectKeys.filter((k) => k.environment === envName);
-      return { envDef, keys: envKeys };
-    })
+    .map((envName) => ({
+      envDef: environments.find((e) => e.name === envName)!,
+      keys: projectKeys.filter((k) => k.environment === envName),
+    }))
     .filter((g) => g.keys.length > 0);
-
-  const totalAccesses = projectKeys.reduce((s, k) => s + k.accessesToday, 0);
-  const activeCount = projectKeys.filter((k) => k.status === "active").length;
 
   return (
     <div className="rounded-xl border-0.5 bg-[var(--bg-100)] overflow-hidden" style={{ borderColor: "var(--border-300)" }}>
       {/* Project header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b-0.5" style={{ borderColor: "var(--border-300)" }}>
+      <div className="flex items-center justify-between px-5 py-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--bg-300)] text-[11px] font-semibold text-[var(--text-200)]">
-            {project.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <span className="text-sm font-semibold text-[var(--text-000)]">{project}</span>
-            <div className="flex items-center gap-3 mt-0.5">
-              <span className="text-[10px] text-[var(--text-500)]">{activeCount} active key{activeCount !== 1 ? "s" : ""}</span>
-              <span className="text-[10px] text-[var(--text-500)]">{totalAccesses.toLocaleString()} accesses today</span>
-            </div>
-          </div>
+          <span className="text-sm font-semibold text-[var(--text-000)]">{project}</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-[var(--text-400)]">
+            {activeCount} active · {totalAccesses.toLocaleString()} accesses today
+          </span>
         </div>
       </div>
 
-      {/* Environment sections */}
-      {envGroups.map(({ envDef, keys: envKeys }, envIdx) => (
-        <div key={envDef.name}>
-          {/* Environment sub-header with approval badge */}
-          <div
-            className="flex items-center gap-2 px-5 py-2 bg-[var(--bg-000)]/50"
-            style={{ borderBottom: "0.5px solid var(--border-300)" }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: envDef.color }} />
-            <span className="text-[11px] font-medium text-[var(--text-200)]">{envDef.label}</span>
-            <span className="text-[10px] text-[var(--text-500)]">·</span>
-            <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${
-              envDef.approvalLevel === "cto"
-                ? "text-[hsl(0,70%,65%)]"
-                : envDef.approvalLevel === "team-lead" || envDef.approvalLevel === "vp-eng"
-                ? "text-[hsl(40,71%,50%)]"
-                : "text-[hsl(97,59%,46%)]"
-            }`}>
-              {envDef.approvalLevel === "none" ? (
-                <>
-                  <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 110 14A7 7 0 018 1zm2.93 4.72a.75.75 0 00-1.06 0L7 8.59 6.13 7.72a.75.75 0 10-1.06 1.06l1.5 1.5a.75.75 0 001.06 0l3.3-3.3a.75.75 0 000-1.06z"/></svg>
-                  Auto-approved
-                </>
-              ) : (
-                <>
-                  <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a3 3 0 013 3v2h.5a1.5 1.5 0 011.5 1.5v5a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 013 12.5v-5A1.5 1.5 0 014.5 6H5V4a3 3 0 013-3zm0 1.5A1.5 1.5 0 006.5 4v2h3V4A1.5 1.5 0 008 2.5z"/></svg>
-                  Requires {envDef.approvalName}
-                </>
-              )}
-            </span>
-          </div>
+      {/* Environment rows */}
+      {envGroups.map(({ envDef, keys: envKeys }) =>
+        envKeys.map((key) => {
+          const status = statusColors[key.status];
+          const isExpanded = expandedKey === key.id;
 
-          {/* Key rows */}
-          {envKeys.map((key, keyIdx) => {
-            const status = statusColors[key.status];
-            const accessPct = key.accessLimit > 0 ? (key.accessesToday / key.accessLimit) * 100 : 0;
-            const isLast = envIdx === envGroups.length - 1 && keyIdx === envKeys.length - 1;
-
-            return (
-              <div
-                key={key.id}
-                className="grid grid-cols-[1.5fr_1fr_1fr_100px_80px_40px] items-center gap-4 px-5 py-3 transition-colors hover:bg-[var(--bg-200)]"
-                style={{ borderBottom: isLast ? "none" : "0.5px solid var(--border-300)" }}
+          return (
+            <div key={key.id}>
+              {/* Key row — clean, single line */}
+              <button
+                onClick={() => setExpandedKey(isExpanded ? null : key.id)}
+                className="flex w-full items-center gap-3 px-5 py-2.5 text-left transition-colors hover:bg-[var(--bg-200)] border-t-0.5"
+                style={{ borderColor: "var(--border-300)" }}
               >
-                {/* Name + source */}
-                <div className="flex items-center gap-3">
-                  <div className={`flex h-7 w-7 items-center justify-center rounded-md ${
-                    key.source.type === "created-by-claude" ? "bg-[var(--accent-brand)]/15" : "bg-[var(--bg-300)]"
-                  }`}>
-                    {key.source.type === "created-by-claude" ? (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--accent-brand)">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                      </svg>
-                    ) : (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-400)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" />
-                        <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" />
-                      </svg>
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[var(--text-000)]">{key.name}</span>
-                      {key.source.type === "created-by-claude" && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-brand)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-brand)]">
-                          <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
-                          Created by Claude{key.source.provider ? ` via ${key.source.provider}` : ""}
-                        </span>
-                      )}
-                      {key.source.type === "imported" && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[hsl(210,66%,67%)]/10 px-2 py-0.5 text-[10px] font-medium text-[hsl(210,66%,67%)]">
-                          Imported from {key.source.provider}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <code className="text-[10px] text-[var(--text-500)]" style={{ fontFamily: "var(--font-mono)" }}>{key.prefix}</code>
-                    </div>
-                  </div>
+                {/* Expand chevron */}
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="var(--text-500)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`flex-shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                >
+                  <path d="M6 4l4 4-4 4" />
+                </svg>
+
+                {/* Environment dot + label */}
+                <div className="flex items-center gap-1.5 w-[100px] flex-shrink-0">
+                  <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: envDef.color }} />
+                  <span className="text-xs text-[var(--text-300)]">{envDef.label}</span>
                 </div>
 
-                {/* Accesses */}
-                <div>
-                  <div className="text-sm font-medium text-[var(--text-000)]">
-                    {key.accessesToday.toLocaleString()}
-                  </div>
-                  <div className="mt-1 h-1 w-full max-w-[80px] rounded-full bg-[var(--bg-300)]">
-                    <div
-                      className="h-1 rounded-full transition-all"
-                      style={{
-                        width: `${Math.min(accessPct, 100)}%`,
-                        backgroundColor: accessPct > 80 ? "hsl(0,98%,75%)" : accessPct > 60 ? "hsl(40,71%,50%)" : "var(--accent-brand)",
-                      }}
-                    />
-                  </div>
-                  <div className="mt-0.5 text-[10px] text-[var(--text-500)]">
-                    of {key.accessLimit.toLocaleString()}/day
-                  </div>
-                </div>
+                {/* Approval badge */}
+                <span className={`text-[10px] font-medium w-[160px] flex-shrink-0 ${
+                  envDef.approvalLevel === "cto"
+                    ? "text-[hsl(0,70%,65%)]"
+                    : envDef.approvalLevel === "team-lead" || envDef.approvalLevel === "vp-eng"
+                    ? "text-[hsl(40,71%,50%)]"
+                    : "text-[hsl(97,59%,46%)]"
+                }`}>
+                  {envDef.approvalLevel === "none" ? "Auto-approved" : `Requires ${envDef.approvalName}`}
+                </span>
 
-                {/* Last accessed */}
-                <div>
-                  <span className="text-sm text-[var(--text-300)]">{key.lastUsed}</span>
-                  <div className="text-[10px] text-[var(--text-500)]">{key.lastUsedBy}</div>
-                </div>
+                {/* Key name */}
+                <span className="text-sm text-[var(--text-000)] flex-1 min-w-0 truncate">{key.name}</span>
 
-                {/* Status badge */}
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${status.bg} ${status.text}`}>
+                {/* Source badge (only for created-by-claude) */}
+                {key.source.type === "created-by-claude" && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-brand)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--accent-brand)] flex-shrink-0">
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
+                    Created by Claude
+                  </span>
+                )}
+
+                {/* Status */}
+                <span className={`inline-flex items-center gap-1.5 text-xs flex-shrink-0 ${status.text}`}>
                   <span className={`h-1.5 w-1.5 rounded-full ${status.dot}`} />
                   {status.label}
                 </span>
+              </button>
 
-                {/* Sparkline */}
-                <Sparkline
-                  data={key.accessHistory}
-                  color={key.status === "revoked" ? "var(--text-500)" : "var(--accent-brand)"}
-                />
+              {/* Expanded detail panel */}
+              {isExpanded && (
+                <div className="bg-[var(--bg-000)] px-5 py-4 border-t-0.5" style={{ borderColor: "var(--border-300)" }}>
+                  <div className="ml-[24px] grid grid-cols-3 gap-6">
+                    {/* Key info */}
+                    <div className="space-y-3">
+                      <div>
+                        <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Key</div>
+                        <code className="text-xs text-[var(--text-300)]" style={{ fontFamily: "var(--font-mono)" }}>{key.prefix}</code>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Created</div>
+                        <span className="text-xs text-[var(--text-300)]">{key.created}</span>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Last accessed</div>
+                        <span className="text-xs text-[var(--text-300)]">{key.lastUsed}</span>
+                        <div className="text-[10px] text-[var(--text-500)]">{key.lastUsedBy}</div>
+                      </div>
+                      {key.source.type === "created-by-claude" && key.source.provider && (
+                        <div>
+                          <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Provisioned via</div>
+                          <span className="text-xs text-[var(--accent-brand)]">{key.source.provider}</span>
+                          {key.source.claimedBy && (
+                            <div className="text-[10px] text-[var(--text-500)]">Claimed by {key.source.claimedBy}</div>
+                          )}
+                        </div>
+                      )}
+                      {key.source.type === "imported" && key.source.provider && (
+                        <div>
+                          <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Imported from</div>
+                          <span className="text-xs text-[hsl(210,66%,67%)]">{key.source.provider}</span>
+                        </div>
+                      )}
+                    </div>
 
-                {/* Actions */}
-                <button className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-400)] transition-colors hover:bg-[var(--bg-300)] hover:text-[var(--text-000)]">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                    <circle cx="8" cy="3" r="1.5" />
-                    <circle cx="8" cy="8" r="1.5" />
-                    <circle cx="8" cy="13" r="1.5" />
-                  </svg>
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      ))}
+                    {/* Usage */}
+                    <div className="space-y-3">
+                      <div>
+                        <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Accesses today</div>
+                        <span className="text-sm font-medium text-[var(--text-000)]">{key.accessesToday.toLocaleString()}</span>
+                        <span className="text-xs text-[var(--text-500)]"> / {key.accessLimit.toLocaleString()}</span>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Models</div>
+                        <div className="flex flex-wrap gap-1">
+                          {key.models.map((m) => (
+                            <span key={m} className="rounded bg-[var(--bg-300)] px-1.5 py-0.5 text-[10px] text-[var(--text-300)]">{m.replace("claude-", "")}</span>
+                          ))}
+                          {key.models.length === 0 && <span className="text-[10px] text-[var(--text-500)]">None</span>}
+                        </div>
+                      </div>
+                      {key.rotationSchedule && (
+                        <div>
+                          <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Rotation</div>
+                          <span className="text-xs text-[var(--text-300)]">Every {key.rotationSchedule}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 14-day trend */}
+                    <div>
+                      <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-2">14-day trend</div>
+                      <Sparkline
+                        data={key.accessHistory}
+                        color={key.status === "revoked" ? "var(--text-500)" : "var(--accent-brand)"}
+                      />
+                      {key.secretsSync.length > 0 && (
+                        <div className="mt-3">
+                          <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Secrets sync</div>
+                          <div className="flex gap-1.5">
+                            {key.secretsSync.map((sync) => (
+                              <span
+                                key={sync.provider}
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                                  sync.status === "synced"
+                                    ? "bg-[hsl(97,59%,46%)]/10 text-[hsl(97,59%,46%)]"
+                                    : "bg-[hsl(40,71%,50%)]/10 text-[hsl(40,71%,50%)]"
+                                }`}
+                              >
+                                <span className={`h-1 w-1 rounded-full ${sync.status === "synced" ? "bg-[hsl(97,59%,46%)]" : "bg-[hsl(40,71%,50%)]"}`} />
+                                {sync.provider}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
     </div>
   );
 }
@@ -384,16 +339,15 @@ function ActivityTab() {
           {auditLog.map((entry, i) => (
             <div
               key={i}
-              className="grid grid-cols-[80px_120px_120px_90px_80px_70px_1fr] items-center gap-4 px-5 py-2.5 text-xs"
+              className="flex items-center gap-4 px-5 py-2.5 text-xs"
               style={{ borderBottom: i < auditLog.length - 1 ? "0.5px solid var(--border-300)" : "none" }}
             >
-              <code className="text-[var(--text-400)]" style={{ fontFamily: "var(--font-mono)" }}>{entry.timestamp.split(" ")[1]}</code>
-              <span className="font-medium text-[var(--text-000)]">{entry.user}</span>
-              <span className="text-[var(--text-300)]">{entry.project}</span>
-              <span className="text-[var(--text-400)]">{entry.model}</span>
-              <span className="text-[var(--text-400)]">{(entry.tokens / 1000).toFixed(1)}K tok</span>
-              <span className="text-[var(--text-400)]">{entry.latency}ms</span>
-              <span className="text-right text-[var(--text-500)]">{entry.action}</span>
+              <code className="text-[var(--text-500)] w-[60px] flex-shrink-0" style={{ fontFamily: "var(--font-mono)" }}>{entry.timestamp.split(" ")[1]}</code>
+              <span className="font-medium text-[var(--text-000)] w-[120px] flex-shrink-0 truncate">{entry.user}</span>
+              <span className="text-[var(--text-300)] w-[100px] flex-shrink-0 truncate">{entry.project}</span>
+              <span className="text-[var(--text-400)] flex-shrink-0">{entry.model}</span>
+              <span className="text-[var(--text-400)] flex-shrink-0">{(entry.tokens / 1000).toFixed(1)}K tok</span>
+              <span className="text-[var(--text-500)] ml-auto truncate">{entry.action}</span>
             </div>
           ))}
         </div>
