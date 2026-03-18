@@ -49,7 +49,7 @@ export function FeaturePromo() {
             workflows, and automatic rotation — all built into Claude.
           </p>
           <ul className="space-y-2 mb-6">
-            <PromoItem>Environment-based approval escalation (dev → staging → production)</PromoItem>
+            <PromoItem>Approval escalation by environment</PromoItem>
             <PromoItem>Team access controls with per-member usage tracking</PromoItem>
             <PromoItem>Zero-downtime key rotation with 1Password & AWS sync</PromoItem>
             <PromoItem>Real-time Claude access monitoring across all projects</PromoItem>
@@ -92,18 +92,18 @@ const CLAUDE_SPARKLE_PATH =
 
 /* ── Illustration: 3 Claude logos in a row ── */
 function IllustrationPlaceholder() {
-  const s = 0.08;
-  const y = 35;
+  const s = 0.1;
+  const y = 28;
 
   return (
-    <svg width="200" height="100" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g transform={`translate(46, ${y}) scale(${s})`}>
+    <svg width="240" height="110" viewBox="0 0 240 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g transform={`translate(42, ${y}) scale(${s})`}>
         <path d={CLAUDE_SPARKLE_PATH} fill="white" fillRule="nonzero" />
       </g>
-      <g transform={`translate(80, ${y}) scale(${s})`}>
+      <g transform={`translate(88, ${y}) scale(${s})`}>
         <path d={CLAUDE_SPARKLE_PATH} fill="white" fillRule="nonzero" />
       </g>
-      <g transform={`translate(114, ${y}) scale(${s})`}>
+      <g transform={`translate(134, ${y}) scale(${s})`}>
         <path d={CLAUDE_SPARKLE_PATH} fill="white" fillRule="nonzero" />
       </g>
     </svg>
