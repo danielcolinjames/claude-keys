@@ -90,6 +90,14 @@ function KeysTab() {
         const projectKeys = keys.filter((k) => k.project === project);
         return <ProjectCard key={project} project={project} keys={projectKeys} />;
       })}
+
+      {/* New project card */}
+      <button className="flex w-full items-center justify-center gap-2 rounded-xl border-0.5 border-dashed py-4 text-sm text-[var(--text-500)] transition-colors hover:bg-[var(--bg-100)] hover:text-[var(--text-300)] hover:border-[var(--text-500)]" style={{ borderColor: "var(--border-300)" }}>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+          <path d="M8 3v10M3 8h10" />
+        </svg>
+        New project
+      </button>
     </div>
   );
 }
@@ -115,11 +123,21 @@ function ProjectCard({ project, keys: projectKeys }: { project: string; keys: Ap
       <div className="flex items-center justify-between px-5 py-3.5">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-[var(--text-000)]">{project}</span>
-        </div>
-        <div className="flex items-center gap-4">
           <span className="text-xs text-[var(--text-400)]">
             {activeCount} active · {totalAccesses.toLocaleString()} accesses today
           </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="rounded-md px-2 py-1 text-xs text-[var(--text-500)] transition-colors hover:bg-[var(--bg-300)] hover:text-[var(--text-200)]">
+            + Add key
+          </button>
+          <button className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-500)] transition-colors hover:bg-[var(--bg-300)] hover:text-[var(--text-200)]">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+              <circle cx="8" cy="3" r="1.2" />
+              <circle cx="8" cy="8" r="1.2" />
+              <circle cx="8" cy="13" r="1.2" />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -408,9 +426,6 @@ function ServicesTab() {
             style={{ borderBottom: i < connectedServices.length - 1 ? "0.5px solid var(--border-300)" : "none" }}
           >
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--bg-300)] text-lg">
-                {service.icon}
-              </span>
               <div>
                 <div className="text-sm font-medium text-[var(--text-000)]">{service.name}</div>
                 {service.keysProvisioned > 0 ? (
