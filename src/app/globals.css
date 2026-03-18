@@ -1,31 +1,128 @@
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Lora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Anthropic Font Faces */
+@font-face {
+  font-family: "Anthropic Sans";
+  src: url("https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/cc27851ad-CFxw3nG7.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Sans";
+  src: url("https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c9d3a3a49-BI1hrwN4.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Serif";
+  src: url("https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c66fc489e-C-BHYa_K.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Serif";
+  src: url("https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/cc410af59-DH94ugQz.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Mono";
+  src: url("https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c5dbe0935-B88FVziN.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Anthropic Mono";
+  src: url("https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1/c2f08283e-DHGc3er-.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 @import "tailwindcss";
 
+/* Claude.ai Design Tokens — Dark Mode */
 :root {
-  /* Anthropic/Claude Design Tokens */
-  --bg-page: #2b2a27;
-  --bg-surface: #1f1e1b;
-  --bg-elevated: #393937;
-  --bg-hover: #444440;
-  --bg-input: #353532;
+  /* Backgrounds */
+  --bg-000: #2F2F2D;
+  --bg-100: #252523;
+  --bg-200: #1F1E1D;
+  --bg-300: #131312;
+  --bg-400: #000000;
+  --bg-500: #000000;
 
-  --text-primary: #eeeeee;
-  --text-secondary: #b0aea5;
-  --text-muted: #9a9893;
-  --text-subtle: #6b6a68;
+  /* Text */
+  --text-000: #FAF9F5;
+  --text-100: #FAF9F5;
+  --text-200: #C1BFB5;
+  --text-300: #C1BFB5;
+  --text-400: #98958E;
+  --text-500: #98958E;
 
-  --accent-primary: #d97757;
-  --accent-deep: #ae5630;
-  --accent-hover: #c4684a;
-  --accent-blue: #6a9bcc;
-  --accent-green: #788c5d;
+  /* Accent */
+  --accent-brand: #D87756;
+  --accent-000: #74ABE2;
+  --accent-100: #2C83DB;
+  --accent-200: #2C83DB;
 
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-medium: rgba(255, 255, 255, 0.12);
+  /* Brand */
+  --brand-000: #C6603F;
+  --brand-200: #D87756;
 
-  --font-heading: 'Newsreader', ui-serif, Georgia, serif;
-  --font-body: 'Lora', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* Borders */
+  --border-100: #DDDCD0;
+  --border-200: #DDDCD0;
+  --border-300: #1F1E1D;
+  --border-400: #1F1E1D;
+
+  /* Status */
+  --success-000: #6DBD45;
+  --success-100: #3D8C2A;
+  --danger-000: #F27474;
+  --danger-100: #CC4545;
+  --warning-000: #D9A520;
+  --warning-100: #B58A14;
+
+  /* On-color */
+  --oncolor-100: #FFFFFF;
+
+  /* Pictogram */
+  --pictogram-100: #4A4A46;
+  --pictogram-200: #3A3A36;
+  --pictogram-300: #2F2F2D;
+  --pictogram-400: #252523;
+
+  /* Fonts */
+  --font-sans: "Anthropic Sans", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "Anthropic Serif", Georgia, "Times New Roman", serif;
+  --font-mono: "Anthropic Mono", ui-monospace, monospace;
+
+  /* Aliases used by existing code */
+  --bg-page: var(--bg-000);
+  --bg-surface: var(--bg-100);
+  --bg-elevated: var(--bg-300);
+  --bg-hover: var(--bg-200);
+  --bg-input: var(--bg-200);
+
+  --text-primary: var(--text-000);
+  --text-secondary: var(--text-200);
+  --text-muted: var(--text-300);
+  --text-subtle: var(--text-500);
+
+  --accent-primary: var(--accent-brand);
+  --accent-deep: var(--brand-000);
+  --accent-hover: #C56A4B;
+  --accent-blue: var(--accent-000);
+  --accent-green: #6DBD45;
+
+  --border-subtle: rgba(221, 220, 208, 0.08);
+  --border-medium: rgba(221, 220, 208, 0.15);
+
+  --font-heading: var(--font-serif);
+  --font-body: var(--font-sans);
 }
 
 @theme inline {
@@ -40,24 +137,39 @@
   --color-subtle: var(--text-subtle);
   --color-border: var(--border-subtle);
   --color-border-medium: var(--border-medium);
-  --font-sans: var(--font-body);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-heading: var(--font-heading);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(250, 249, 240, 0.2) transparent;
+  scrollbar-color: rgba(250, 249, 240, 0.12) transparent;
 }
 
 body {
   background: var(--bg-page);
   color: var(--text-primary);
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
+  font-weight: 430;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: rgba(217, 119, 87, 0.3);
+  background: rgba(216, 119, 86, 0.3);
+}
+
+/* Border width utilities matching claude.ai */
+.border-0\.5 {
+  border-width: 0.5px;
+}
+.border-t-0\.5 {
+  border-top-width: 0.5px;
+}
+.border-r-0\.5 {
+  border-right-width: 0.5px;
+}
+.border-b-0\.5 {
+  border-bottom-width: 0.5px;
 }
