@@ -2,25 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-
-/* ── Three Claude sparkle logos (*** motif) — all same size ── */
-function ClaudeSparkles() {
-  return (
-    <span className="ml-auto flex items-center gap-[2px]">
-      <Image src="/claude-sparkle.png" alt="" width={12} height={12} className="opacity-80" />
-      <Image src="/claude-sparkle.png" alt="" width={12} height={12} className="opacity-80" />
-      <Image src="/claude-sparkle.png" alt="" width={12} height={12} className="opacity-80" />
-    </span>
-  );
-}
-
-/* ── Sub-navigation for Keys section ── */
-const keysSubNav = [
-  { href: "/", label: "Dashboard" },
-  { href: "/policies", label: "Policies & Access" },
-  { href: "/analytics", label: "Activity" },
-];
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -83,36 +64,19 @@ export function Sidebar() {
           {/* Code */}
           <NavLink href="https://claude.ai/code" label="Code" icon={<CodeIcon />} external />
 
-          {/* ── Keys Section (Active) ── */}
-          <div className="mt-1">
-            <div className="flex h-8 w-full items-center gap-3 rounded-lg px-4 py-1.5 bg-[var(--bg-300)] text-[var(--text-000)]">
-              <div className="flex items-center justify-center" style={{ width: 16, height: 16 }}>
-                <KeysIcon />
-              </div>
-              <span className="text-sm font-medium">Keys</span>
-              <ClaudeSparkles />
+          {/* ── Keys (Active) ── */}
+          <Link
+            href="/"
+            className="flex h-8 w-full items-center gap-3 rounded-lg px-4 py-1.5 bg-[var(--bg-300)] text-[var(--text-000)]"
+          >
+            <div className="flex items-center justify-center" style={{ width: 16, height: 16 }}>
+              <KeysIcon />
             </div>
+            <span className="text-sm font-medium">Keys</span>
+          </Link>
 
-            {/* Sub-navigation */}
-            <div className="ml-[22px] mt-0.5 flex flex-col gap-px border-l border-[var(--border-subtle)] pl-3">
-              {keysSubNav.map(({ href, label }) => {
-                const active = pathname === href;
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={`rounded-md px-2.5 py-1 text-[13px] transition-colors duration-75 ${
-                      active
-                        ? "bg-[var(--bg-200)] text-[var(--text-000)] font-medium"
-                        : "text-[var(--text-400)] hover:text-[var(--text-200)] hover:bg-[var(--bg-200)]"
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
+          {/* Ask Company */}
+          <NavLink href="https://claude.ai" label="Ask Blackbird" icon={<AskIcon />} />
         </div>
       </div>
 
@@ -230,6 +194,14 @@ function KeysIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-[var(--accent-brand)]" style={{ flexShrink: 0 }}>
       <path d="M13 2a5 5 0 0 1 1.28 9.84l-.28.06v1.6l-1.5 1.5v1.5L11 18H8.5v-2.5l4.02-4.02A5 5 0 0 1 13 2Zm0 1a4 4 0 0 0-.88 7.9l.38.1.5.06V12.41l-4 4.01V17h1.59l.91-.91V14.5l1.5-1.5v-1.94l.5-.06a4 4 0 0 0-.5-7.95Zm1 2.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 1a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1Z" />
+    </svg>
+  );
+}
+
+function AskIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-[var(--text-300)]" style={{ flexShrink: 0 }}>
+      <path d="M10 2C14.4183 2 18 5.58172 18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2ZM10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3ZM10 13.5C10.4142 13.5 10.75 13.8358 10.75 14.25C10.75 14.6642 10.4142 15 10 15C9.58579 15 9.25 14.6642 9.25 14.25C9.25 13.8358 9.58579 13.5 10 13.5ZM10 5.5C11.3807 5.5 12.5 6.61929 12.5 8C12.5 9.08286 12.1036 9.56805 11.1814 10.2735L10.9237 10.4614C10.3931 10.8469 10.25 11.0164 10.25 11.5C10.25 11.7761 10.0261 12 9.75 12C9.47386 12 9.25 11.7761 9.25 11.5C9.25 10.6678 9.59894 10.1959 10.4363 9.5498L10.7013 9.3555C11.2933 8.919 11.5 8.62857 11.5 8C11.5 7.17157 10.8284 6.5 10 6.5C9.17157 6.5 8.5 7.17157 8.5 8C8.5 8.27614 8.27614 8.5 8 8.5C7.72386 8.5 7.5 8.27614 7.5 8C7.5 6.61929 8.61929 5.5 10 5.5Z" />
     </svg>
   );
 }
