@@ -10,7 +10,7 @@ export function FeaturePromo() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
-        className="relative w-full max-w-lg rounded-2xl border-0.5 bg-[var(--bg-100)] shadow-2xl overflow-hidden"
+        className="relative w-full max-w-xl rounded-2xl border-0.5 bg-[var(--bg-100)] shadow-2xl overflow-hidden"
         style={{ borderColor: "var(--border-300)" }}
       >
         {/* Illustration area — terracotta background */}
@@ -51,7 +51,6 @@ export function FeaturePromo() {
 
           {/* Escalation path mini-diagram */}
           <div className="mb-4 rounded-lg bg-[var(--bg-200)] p-3">
-            <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-2">Approval escalation by environment</div>
             <div className="flex items-center gap-2">
               <EscalationStep color="hsl(210,66%,67%)" label="Development" approval="Auto-approved" />
               <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--text-500)" className="flex-shrink-0"><path d="M6 3l5 5-5 5" fill="none" stroke="var(--text-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>

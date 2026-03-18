@@ -57,6 +57,7 @@ export type AgentActivityEntry = {
 export type ApiKey = {
   id: string;
   name: string;
+  description: string;
   project: string;
   prefix: string;
   created: string;
@@ -82,6 +83,7 @@ export const keys: ApiKey[] = [
   {
     id: "key_1",
     name: "production-api",
+    description: "Main production key for emoji.today API and Claude integrations",
     project: "emoji.today",
     prefix: "sk-ant-api03-8kX9...v2Lm",
     created: "2026-01-15",
@@ -108,6 +110,7 @@ export const keys: ApiKey[] = [
   {
     id: "key_2",
     name: "dev-key",
+    description: "Local development and testing for Being agent",
     project: "being.limited",
     prefix: "sk-ant-api03-Qp7R...nF3k",
     created: "2026-02-20",
@@ -131,6 +134,7 @@ export const keys: ApiKey[] = [
   {
     id: "key_3",
     name: "staging-api",
+    description: "Staging environment — provisioned by Claude via Vercel",
     project: "dillydally.today",
     prefix: "sk-ant-api03-mN2v...xK8j",
     created: "2026-03-01",
@@ -156,6 +160,7 @@ export const keys: ApiKey[] = [
   {
     id: "key_4",
     name: "hackathon-demo",
+    description: "Temporary key for Unsaid hackathon demo",
     project: "unsaid.to",
     prefix: "sk-ant-api03-7Yz3...bQ1w",
     created: "2026-03-10",
@@ -179,6 +184,7 @@ export const keys: ApiKey[] = [
   {
     id: "key_5",
     name: "agent-prod",
+    description: "Autonomous agent key — provisioned by Claude via Stripe",
     project: "being.limited",
     prefix: "sk-ant-api03-Lp4Q...hR9m",
     created: "2026-03-08",
@@ -202,6 +208,7 @@ export const keys: ApiKey[] = [
   {
     id: "key_6",
     name: "internal-testing",
+    description: "Legacy testing key — imported from AWS, now revoked",
     project: "emoji.today",
     prefix: "sk-ant-api03-Wx5T...pL2n",
     created: "2025-12-01",

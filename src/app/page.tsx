@@ -123,7 +123,7 @@ function ProjectCard({ project, keys: projectKeys }: { project: string; keys: Ap
         </div>
       </div>
 
-      {/* Environment rows */}
+      {/* Key rows */}
       {envGroups.map(({ envDef, keys: envKeys }) =>
         envKeys.map((key) => {
           const status = statusColors[key.status];
@@ -131,10 +131,10 @@ function ProjectCard({ project, keys: projectKeys }: { project: string; keys: Ap
 
           return (
             <div key={key.id}>
-              {/* Key row — clean, single line */}
+              {/* Key row — two-tone bg, description-first */}
               <button
                 onClick={() => setExpandedKey(isExpanded ? null : key.id)}
-                className="flex w-full items-center gap-3 px-5 py-2.5 text-left transition-colors hover:bg-[var(--bg-200)] border-t-0.5"
+                className="flex w-full items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-[var(--bg-300)] border-t-0.5 bg-[var(--bg-200)]"
                 style={{ borderColor: "var(--border-300)" }}
               >
                 {/* Expand chevron */}
@@ -158,19 +158,8 @@ function ProjectCard({ project, keys: projectKeys }: { project: string; keys: Ap
                   <span className="text-xs text-[var(--text-300)]">{envDef.label}</span>
                 </div>
 
-                {/* Approval badge */}
-                <span className={`text-[10px] font-medium w-[160px] flex-shrink-0 ${
-                  envDef.approvalLevel === "cto"
-                    ? "text-[hsl(0,70%,65%)]"
-                    : envDef.approvalLevel === "team-lead" || envDef.approvalLevel === "vp-eng"
-                    ? "text-[hsl(40,71%,50%)]"
-                    : "text-[hsl(97,59%,46%)]"
-                }`}>
-                  {envDef.approvalLevel === "none" ? "Auto-approved" : `Requires ${envDef.approvalName}`}
-                </span>
-
-                {/* Key name */}
-                <span className="text-sm text-[var(--text-000)] flex-1 min-w-0 truncate">{key.name}</span>
+                {/* Description (replaces key name in collapsed view) */}
+                <span className="text-sm text-[var(--text-200)] flex-1 min-w-0 truncate">{key.description}</span>
 
                 {/* Source badge (only for created-by-claude) */}
                 {key.source.type === "created-by-claude" && (
@@ -190,11 +179,38 @@ function ProjectCard({ project, keys: projectKeys }: { project: string; keys: Ap
               {/* Expanded detail panel */}
               {isExpanded && (
                 <div className="bg-[var(--bg-000)] px-5 py-4 border-t-0.5" style={{ borderColor: "var(--border-300)" }}>
+                  {/* Actions bar */}
+                  <div className="ml-[24px] flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <code className="text-xs text-[var(--text-300)] bg-[var(--bg-200)] px-2 py-1 rounded" style={{ fontFamily: "var(--font-mono)" }}>{key.name}</code>
+                      <span className={`text-[10px] font-medium ${
+                        envDef.approvalLevel === "cto"
+                          ? "text-[hsl(0,70%,65%)]"
+                          : envDef.approvalLevel === "team-lead" || envDef.approvalLevel === "vp-eng"
+                          ? "text-[hsl(40,71%,50%)]"
+                          : "text-[hsl(97,59%,46%)]"
+                      }`}>
+                        {envDef.approvalLevel === "none" ? "Auto-approved" : `Requires ${envDef.approvalName}`}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="rounded-md border-0.5 px-3 py-1.5 text-[11px] font-medium text-[var(--text-300)] transition-colors hover:bg-[var(--bg-200)] hover:text-[var(--text-000)]" style={{ borderColor: "var(--border-300)" }}>
+                        Edit
+                      </button>
+                      <button className="rounded-md border-0.5 px-3 py-1.5 text-[11px] font-medium text-[var(--accent-brand)] transition-colors hover:bg-[var(--accent-brand)]/10" style={{ borderColor: "var(--border-300)" }}>
+                        Rotate
+                      </button>
+                      <button className="rounded-md border-0.5 px-3 py-1.5 text-[11px] font-medium text-[hsl(0,70%,65%)] transition-colors hover:bg-[hsl(0,70%,65%)]/10" style={{ borderColor: "var(--border-300)" }}>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="ml-[24px] grid grid-cols-3 gap-6">
                     {/* Key info */}
                     <div className="space-y-3">
                       <div>
-                        <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Key</div>
+                        <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-1">Key prefix</div>
                         <code className="text-xs text-[var(--text-300)]" style={{ fontFamily: "var(--font-mono)" }}>{key.prefix}</code>
                       </div>
                       <div>

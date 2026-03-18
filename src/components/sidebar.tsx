@@ -76,7 +76,7 @@ export function Sidebar() {
           </Link>
 
           {/* Ask Company */}
-          <NavLink href="https://claude.ai" label="Ask Blackbird" icon={<AskIcon />} />
+          <NavLink href="https://claude.ai" label="Ask Leftway" icon={<AskIcon />} />
         </div>
       </div>
 
