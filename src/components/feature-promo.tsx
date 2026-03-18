@@ -45,14 +45,27 @@ export function FeaturePromo() {
             Introducing Claude Keys
           </h2>
           <p className="text-sm text-[var(--text-300)] leading-relaxed mb-4">
-            Manage your API keys with team-aware access controls, environment-based approval
-            workflows, and automatic rotation — all built into Claude.
+            Manage your team&apos;s API keys with environment-based approval workflows,
+            autonomous agent provisioning, and secrets sync — all built into Claude.
           </p>
+
+          {/* Escalation path mini-diagram */}
+          <div className="mb-4 rounded-lg bg-[var(--bg-200)] p-3">
+            <div className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-500)] mb-2">Approval escalation by environment</div>
+            <div className="flex items-center gap-2">
+              <EscalationStep color="hsl(210,66%,67%)" label="Development" approval="Auto-approved" />
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--text-500)" className="flex-shrink-0"><path d="M6 3l5 5-5 5" fill="none" stroke="var(--text-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <EscalationStep color="hsl(40,71%,50%)" label="Staging" approval="Team Lead" />
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="var(--text-500)" className="flex-shrink-0"><path d="M6 3l5 5-5 5" fill="none" stroke="var(--text-500)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <EscalationStep color="hsl(97,59%,46%)" label="Production" approval="CTO" />
+            </div>
+          </div>
+
           <ul className="space-y-2 mb-6">
-            <PromoItem>Approval escalation by environment</PromoItem>
-            <PromoItem>Team access controls with per-member usage tracking</PromoItem>
-            <PromoItem>Zero-downtime key rotation with 1Password & AWS sync</PromoItem>
-            <PromoItem>Real-time Claude access monitoring across all projects</PromoItem>
+            <PromoItem>Keys grouped by project and environment with escalating approvals</PromoItem>
+            <PromoItem>Claude agents provision keys autonomously — humans claim later</PromoItem>
+            <PromoItem>Zero-downtime rotation synced to 1Password, AWS, Vault</PromoItem>
+            <PromoItem>Full audit trail across team members and autonomous agents</PromoItem>
           </ul>
           <div className="flex items-center gap-3">
             <button
@@ -70,6 +83,18 @@ export function FeaturePromo() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function EscalationStep({ color, label, approval }: { color: string; label: string; approval: string }) {
+  return (
+    <div className="flex-1 rounded-md bg-[var(--bg-100)] px-2.5 py-1.5">
+      <div className="flex items-center gap-1.5 mb-0.5">
+        <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: color }} />
+        <span className="text-[11px] font-medium text-[var(--text-000)]">{label}</span>
+      </div>
+      <div className="text-[10px] text-[var(--text-400)]">{approval}</div>
     </div>
   );
 }

@@ -192,8 +192,9 @@ function CodeIcon() {
 
 function KeysIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-[var(--accent-brand)]" style={{ flexShrink: 0 }}>
-      <path d="M13 2a5 5 0 0 1 1.28 9.84l-.28.06v1.6l-1.5 1.5v1.5L11 18H8.5v-2.5l4.02-4.02A5 5 0 0 1 13 2Zm0 1a4 4 0 0 0-.88 7.9l.38.1.5.06V12.41l-4 4.01V17h1.59l.91-.91V14.5l1.5-1.5v-1.94l.5-.06a4 4 0 0 0-.5-7.95Zm1 2.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 1a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1Z" />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" className="text-[var(--accent-brand)]" style={{ flexShrink: 0 }}>
+      <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" />
+      <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" />
     </svg>
   );
 }
